@@ -717,4 +717,65 @@ class MapSelectorHandler implements OnPanelLoad {
 		this.panels.refreshIcon.RemoveClass('spin-clockwise');
 		this.checkingUpdates = false;
 	}
+
+	/**
+	 * Update ALL map entries by scrolling through the list and clicking each one.
+	 * This forces C++ to load userData for every map in the cache.
+	 */
+	updateAllEntries() {
+		const mapList = $<Panel>('#MapListContainer');
+		if (!mapList) return;
+
+		const clickedMapIDs = new Set<number>();
+		let totalClicked = 0;
+		let lastClickedCount = -1;
+		let noNewClicksIterations = 0;
+
+		$.Msg('[MapSelector] Starting full update - will scroll through entire list...');
+
+		const processVisibleAndScroll = () => {
+			const children = mapList.Children();
+			let clickedThisRound = 0;
+
+			// Click all visible entries we haven't clicked yet
+			for (const child of children) {
+				const mapEntry = child as MapEntry;
+				const mapID = mapEntry?.mapData?.staticData?.id;
+				if (mapID && !clickedMapIDs.has(mapID)) {
+					$.DispatchEvent('Activated', mapEntry, 'mouse');
+					clickedMapIDs.add(mapID);
+					clickedThisRound++;
+					totalClicked++;
+				}
+			}
+
+			$.Msg(`[MapSelector] Clicked ${clickedThisRound} new entries (${totalClicked} total)`);
+
+			// Check if we found new entries this round
+			if (totalClicked === lastClickedCount) {
+				noNewClicksIterations++;
+			} else {
+				noNewClicksIterations = 0;
+				lastClickedCount = totalClicked;
+			}
+
+			// Stop if we've had 3 iterations with no new entries (we've reached the end)
+			if (noNewClicksIterations >= 3) {
+				$.Msg(`[MapSelector] Finished! Updated ${totalClicked} map entries total.`);
+				mapList.ScrollToTop();
+				return;
+			}
+
+			// Scroll down and continue
+			const lastChild = children[children.length - 1];
+			if (lastChild) {
+				lastChild.ScrollParentToMakePanelFit(0, false);
+			}
+			$.Schedule(0.15, processVisibleAndScroll);
+		};
+
+		// Start from top
+		mapList.ScrollToTop();
+		$.Schedule(0.1, processVisibleAndScroll);
+	}
 }

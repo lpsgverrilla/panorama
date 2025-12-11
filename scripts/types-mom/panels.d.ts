@@ -40,6 +40,7 @@ interface MomentumMapSelector extends AbstractPanel<'MomentumMapSelector'> {
 interface MapEntry extends AbstractPanel<'MapEntry'> {
 	readonly mapData: MapCacheAPI.MapData;
 	readonly isDownloading: boolean;
+	handler?: { update(): void };
 }
 
 interface Leaderboards extends AbstractPanel<'Leaderboards'> {

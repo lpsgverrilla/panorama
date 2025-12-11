@@ -68,6 +68,11 @@
 											<Image id="RefreshIcon" class="button__icon" src="file://{images}/refresh.svg" textureheight="32" />
 										</Button>
 									</TooltipPanel>
+									<TooltipPanel class="mr-2" tooltip="Update all map entries (PB, favorites)">
+										<Button class="button button--blue" onactivate="MapSelectorHandler.updateAllEntries()">
+											<Image class="button__icon" src="file://{images}/checkmark.svg" textureheight="32" />
+										</Button>
+									</TooltipPanel>
 									<TooltipPanel tooltip="#MapSelector_Filters_Reset">
 										<Button class="button button--red" onactivate="MapSelectorHandler.clearFilters()">
 											<Image class="button__icon" src="file://{images}/filter-remove.svg" textureheight="32" />

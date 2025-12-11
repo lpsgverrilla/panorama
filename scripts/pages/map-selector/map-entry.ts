@@ -9,7 +9,7 @@ import { Role } from 'common/web/enums/role.enum';
 
 const NEW_MAP_BANNER_CUTOFF = 1000 * 60 * 60 * 24 * 5; // 5 days
 
-@PanelHandler()
+@PanelHandler({ exposeToPanel: true })
 class MapEntryHandler {
 	constructor() {
 		$.RegisterEventHandler('MapEntry_MapDataUpdate', $.GetContextPanel(), () => this.update());
